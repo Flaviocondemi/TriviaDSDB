@@ -1,0 +1,31 @@
+services:
+  mysqldb:
+    image: mysql:5.7
+    ports:
+      - 3307:3307
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ecomm
+      - MYSQL_USER=flavio
+      - MYSQL_PASSWORD=gon1ometr1a
+
+  prometheus:
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    image: prom/prometheus
+    depends_on:
+      - ecommerce
+
+  ecommerce:
+    image: ecommerce
+    ports:
+      - 8080:8080
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - mysqldb
